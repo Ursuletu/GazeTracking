@@ -4,6 +4,10 @@ Check the README.md for complete documentation.
 """
 
 import cv2
+import numpy as np
+from mss import mss
+from PIL import ImageGrab 
+
 from gaze_tracking import GazeTracking
 
 gaze = GazeTracking()
@@ -16,6 +20,7 @@ while True:
     # We send this frame to GazeTracking to analyze it
     gaze.refresh(frame)
 
+    #Check here
     frame = gaze.annotated_frame()
     text = ""
 
