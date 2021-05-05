@@ -6,17 +6,15 @@ import random as r
 
 import cv2
 import numpy as np
-#from mss import mss
-#from PIL import ImageGrab, Image, ImageTk
-#from tkinter import *
+from mss import mss
+from PIL import ImageGrab, Image, ImageTk
+from tkinter import *
 
 from gaze_tracking import GazeTracking
 
-
-
 game.init()
 
-game.display.set_caption("Asteroids")
+game.display.set_caption("Gazetracking Example")
 screen = game.display.set_mode([1280, 1600])
 
 time = 0
@@ -25,9 +23,8 @@ bgcolor = game.color.Color("#ffffff")
 black = game.color.Color("black")
 clock = Clock()
 
-badguy = game.image.load("focus.png")
-#badguy = game.transform.scale(badguy, (100, 100))
-badguys = []
+item = game.image.load("focus.png")
+items = []
 SPAWNENEMY = 1
 CLOCK = 1
 
@@ -42,8 +39,6 @@ timetext=font.render("Time: 0", 0, black)
 # Select a random initial position vector.
 posn = math.Vector2(1280/2 - 300 , 800/2)
 
-
-
 gaze = GazeTracking()
 webcam = cv2.VideoCapture(0)
 
@@ -54,9 +49,11 @@ while gameon:
     gaze.refresh(frame)
     frame = gaze.annotated_frame()
 
+    # Coordinates extracted here as tuple (Left, Right)
     left_pupil = gaze.pupil_left_coords()
     right_pupil = gaze.pupil_right_coords()
 
+    # Coordinates to be extracted to these variables
     xR = 0
     yR = 0
     xL = 0
@@ -74,45 +71,30 @@ while gameon:
         yR = right_pupil[1]
         print('x righteye:' + str(xR))
         print('y righteye:' + str(yR))
-
-    
+   
     # Create a random speed vector.
     speed = 2
     dx = 1+1
     dy = 1
     vector = math.Vector2(dx, dy)
 
-    # Each badguy item is a [position, speed vector].
-    badguys.append([posn, vector])
+    # Each item is a [position, speed vector].
+    items.append([posn, vector])
 
     event = game.event.poll()
-    # if event.type == SPAWNENEMY:
-    #     # Select a random initial position vector.
-    #     posn = math.Vector2(1280/2 - 300 , 800/2)
-
-    #     # Create a random speed vector.
-    #     speed = 2
-    #     dx = 0
-    #     dy = -1
-    #     vector = math.Vector2(dx, dy)
-
-    #     # Each badguy item is a [position, speed vector].
-    #     badguys.append([posn, vector])
 
     if event.type == game.QUIT:
         gameon = False;
 
-    for bg in badguys:
+    for it in items:
         # Update positions.
-        bg[0] += bg[1]  # Update position using speed vector.
+        it[0] += it[1]  # Update position using speed vector.
 
     w, h = game.display.get_surface().get_size()
 
     screen.blit(textToRead, (0, 0))
-
  
-    screen.blit(badguy, (150, (yR + yL)/1.5 - 300))
-
+    screen.blit(item, (150, (yR + yL)/1.5 - 300))
 
     clock.tick(60)
     game.display.flip()
